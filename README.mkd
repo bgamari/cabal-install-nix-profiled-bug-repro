@@ -1,0 +1,30 @@
+Reproduction case for `cabal new-build` bug with GHC 7.10.3 where
+`postgresql-libpq` apparently doesn't get built with profiling.
+
+Starting from a clean store,
+```
+$ cabal new-build --enable-profiling -v3
+...
+src/Database/PostgreSQL/Simple.hs:141:18:
+    Could not find module ‘Database.PostgreSQL.LibPQ’
+    Perhaps you haven't installed the profiling libraries for package ‘postgresql-libpq-0.9.1.1@postg_6f9D1As2FCe0fjZpXXvHvS’?
+    Locations searched:
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/Database/PostgreSQL/LibPQ.hs
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/Database/PostgreSQL/LibPQ.lhs
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/Database/PostgreSQL/LibPQ.hsig
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/Database/PostgreSQL/LibPQ.lhsig
+      src/Database/PostgreSQL/LibPQ.hs
+      src/Database/PostgreSQL/LibPQ.lhs
+      src/Database/PostgreSQL/LibPQ.hsig
+      src/Database/PostgreSQL/LibPQ.lhsig
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/autogen/Database/PostgreSQL/LibPQ.hs
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/autogen/Database/PostgreSQL/LibPQ.lhs
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/autogen/Database/PostgreSQL/LibPQ.hsig
+      /home/ben/well-typed/omnity/network-analysis/test/dist-newstyle/build/postgresql-simple-0.5.1.2/build/autogen/Database/PostgreSQL/LibPQ.lhsig
+      /home/ben/.cabal/store/ghc-7.10.2.20151118/postgresql-libpq-0.9.1.1-9c212c5d63de56ca3e03deca67103d4789a23b7d582b793418a21c544f1dc4fb/lib/Database/PostgreSQL/LibPQ.p_hi
+```
+Indeed there are interface files in the directory of the last path in this
+list, but none for the profiled way.
+
+Looking through the output from `cabal-install` it appears that GHC was never
+invoked with `-prof` for `postgresql-libpq`.
