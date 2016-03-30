@@ -1,0 +1,3 @@
+[submodule "postgresql-simple"]
+	path = postgresql-simple
+	url = http://github.com/lpsmith/postgresql-simple

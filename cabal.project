@@ -1,0 +1,4 @@
+packages:
+    *.cabal
+    ./postgresql-simple/*.cabal
+

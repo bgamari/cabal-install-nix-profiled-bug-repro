@@ -1,0 +1,5 @@
+name: test
+build-type: Simple
+executable test:
+    main-is: Main.hs
+    build-depends: base, postgresql-simple
